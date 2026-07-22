@@ -1,0 +1,3 @@
+cd C:\Users\aasth\AI_DATA_ANALYST
+venv\Scripts\activate.bat
+streamlit run app.py

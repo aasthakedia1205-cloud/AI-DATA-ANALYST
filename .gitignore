@@ -1,0 +1,18 @@
+# Virtual Environment
+venv/
+
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
+
+# Generated Reports
+*.pdf
+
+# Jupyter
+.ipynb_checkpoints/

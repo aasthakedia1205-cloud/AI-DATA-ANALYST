@@ -1,13 +1,13 @@
-AI Data Analyst
+# **AI Data Analyst**
 
 An end-to-end AI-powered data analysis platform built with Python and Streamlit that allows users to upload datasets, automatically analyze and clean data, generate visualizations, obtain AI-powered business insights, train machine learning models, and generate reports — all through an interactive dashboard.
 
 🔗 Live Demo: https://ai-data-analyst-ntpqim6vmr3rruk3ej2ni5.streamlit.app/
 
-Dashboard Preview
+## **Dashboard Preview**
 <img width="959" height="440" alt="dashboard_ai" src="https://github.com/user-attachments/assets/6441a9fb-f62b-432b-90f0-085f1e9f7d51" />
 
-Overview
+## **Overview**
 
 Traditional data analysis often requires multiple tools for data cleaning, visualization, statistical analysis, machine learning and reporting.
 
@@ -34,7 +34,7 @@ The goal is to make data analysis more accessible while combining traditional da
 
 Upload datasets directly through the Streamlit interface.
 
-Supported formats:
+## **Supported formats:**
 
 CSV
 Excel (.xlsx)
@@ -45,7 +45,8 @@ Number of rows
 Number of columns
 Missing values
 Duplicate rows
-📊 Dataset Analysis
+
+## **📊 Dataset Analysis**
 
 The dashboard provides an overview of the uploaded dataset, including:
 
@@ -58,7 +59,7 @@ Duplicate detection
 
 This helps users understand the structure and quality of their data before performing further analysis.
 
-🧹 Automated Data Cleaning
+## **🧹 Automated Data Cleaning**
 
 The application provides data-cleaning functionality to help identify and handle common data-quality problems.
 
@@ -71,7 +72,7 @@ Data preprocessing
 
 A cleaned dataset can then be used for visualization and machine learning.
 
-📈 Dynamic Data Visualization
+## **📈 Dynamic Data Visualization**
 
 Users can generate visualizations based on the columns in their dataset.
 
@@ -86,7 +87,7 @@ Other dynamically generated charts
 
 The visualization system automatically works with the columns selected by the user.
 
-🤖 AI-Powered Business Insights
+## **🤖 AI-Powered Business Insights**
 
 The application integrates Google Gemini to analyze uploaded datasets and generate meaningful insights.
 
@@ -100,7 +101,7 @@ Patterns and trends within the dataset
 
 Instead of manually inspecting large datasets, users can receive an AI-generated analysis.
 
-💬 AI Data Assistant
+## **💬 AI Data Assistant**
 
 Users can ask questions about their dataset using natural language.
 
@@ -116,7 +117,7 @@ The AI Assistant analyzes the uploaded dataset and returns an understandable res
 
 This makes the application useful even for users without advanced programming or data-analysis knowledge.
 
-❤️ Dataset Health Score
+## **❤️ Dataset Health Score**
 
 The application calculates an overall dataset health score based on data-quality characteristics.
 
@@ -128,7 +129,7 @@ Requires cleaning
 
 The health score helps users understand data quality before using the dataset for machine learning.
 
-🤖 Machine Learning
+## **🤖 Machine Learning**
 
 The application can automatically identify the type of machine-learning problem based on the selected target column.
 
@@ -139,19 +140,20 @@ Classification
 
 Users can select a target variable and train an appropriate model directly from the dashboard.
 
-⚖️ Model Comparison
+## **⚖️ Model Comparison**
 
 Multiple machine-learning models can be evaluated and compared based on their performance.
 
 This allows users to understand which model performs better for their dataset instead of relying on a single algorithm.
 
-📄 Automated Reports
+## **📄 Automated Reports**
 
 The application can generate a downloadable PDF report containing important information and analysis from the dataset.
 
 This makes it easier to share the results of the analysis.
 
-🧠 AI Workflow
+## **🧠 AI Workflow**
+
 Upload Dataset
        ↓
 Dataset Overview
@@ -171,7 +173,8 @@ Machine Learning
 Model Comparison
        ↓
 Predictions & Reports
-🛠️ Tech Stack
+
+## **🛠️ Tech Stack**
 
 Programming Language
 
@@ -193,7 +196,8 @@ Frontend Styling
 HTML
 CSS
 
-📂 Project Structure
+## **📂 Project Structure**
+
 AI_DATA_ANALYST/
 │
 ├── assets/
@@ -215,7 +219,7 @@ AI_DATA_ANALYST/
 ├── .gitignore
 └── README.md
 
-🔍 Application Modules
+## **🔍 Application Modules**
 
 | Module           | Purpose                                 |
 | ---------------- | --------------------------------------- |
@@ -230,6 +234,6 @@ AI_DATA_ANALYST/
 | Model Comparison | Compare model performance               |
 | Reports          | Generate downloadable reports           |
 
-Author
+## **Author**
 
 Aastha Kedia Data Science Student

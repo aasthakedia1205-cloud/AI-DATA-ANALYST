@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+from utils.chart_theme import style_chart
 
 def create_visualizations(df):
 
@@ -21,10 +22,28 @@ def create_visualizations(df):
             df,
             x=selected_num,
             nbins=30,
-            title=f"Distribution of {selected_num}"
+            title=f"Distribution of {selected_num}",
+            color_discrete_sequence=[
+                "#D47E30",
+                "#6F4E37",
+                "#F39A46",
+                "#A05A2C",
+                "#8C6239"
+            ]
         )
+        
+        fig = style_chart(fig)
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+        fig.update_layout(
+            height=480
+        )
 
     # ---------------- Bar Chart ----------------
     if categorical_columns:
@@ -44,10 +63,28 @@ def create_visualizations(df):
                 "x": selected_cat,
                 "y": "Count"
             },
-            title=f"Top 10 {selected_cat}"
+            title=f"Top 10 {selected_cat}",
+            color_discrete_sequence=[
+                "#D47E30",
+                "#6F4E37",
+                "#F39A46",
+                "#A05A2C",
+                "#8C6239"
+            ]
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        fig = style_chart(fig)
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+        fig.update_layout(
+            height=480
+        )
 
     # ---------------- Correlation ----------------
     if len(numeric_columns) >= 2:
@@ -59,11 +96,26 @@ def create_visualizations(df):
         fig = px.imshow(
             corr,
             text_auto=True,
-            color_continuous_scale="Blues",
-            title="Correlation Matrix"
+            title="Correlation Matrix",
+            color_continuous_scale=[
+                "#111111",
+                "#6F4E37",
+                "#D47E30"
+            ]
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        fig = style_chart(fig)
+
+        st.plotly_chart(
+            fig,    
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+        fig.update_layout(
+            height=480
+        )
 
 def dynamic_dashboard(df):
 
@@ -97,6 +149,13 @@ def dynamic_dashboard(df):
             "Select Y-axis",
             numeric_columns
         )
+    MOCHA_COLORS = [
+        "#D47E30",
+        "#6F4E37",
+        "#F39A46",
+        "#A05A2C",
+        "#8C6239"
+    ]
 
     color = st.selectbox(
         "Color (Optional)",
@@ -110,26 +169,67 @@ def dynamic_dashboard(df):
         fig = None
 
         if chart_type == "Bar Chart":
-            fig = px.bar(df, x=x_axis, y=y_axis, color=color)
+            fig = px.bar(df, x=x_axis, y=y_axis, color=color,color_discrete_sequence=MOCHA_COLORS)
 
         elif chart_type == "Line Chart":
-            fig = px.line(df, x=x_axis, y=y_axis, color=color)
+            fig = px.line(df, x=x_axis, y=y_axis, color=color,color_discrete_sequence=MOCHA_COLORS)
 
         elif chart_type == "Scatter Plot":
-            fig = px.scatter(df, x=x_axis, y=y_axis, color=color)
+            fig = px.scatter(df, x=x_axis, y=y_axis, color=color,color_discrete_sequence=MOCHA_COLORS)
 
         elif chart_type == "Pie Chart":
+
             pie = df[x_axis].value_counts()
+
+            # Keep top 7 categories
+            pie = pie.head(7)
 
             fig = px.pie(
                 values=pie.values,
-                names=pie.index
+                names=pie.index,
+                hole=0.45,
+                title=f"Top {len(pie)} {x_axis}",
+                color_discrete_sequence=[
+                    "#D47E30",
+                    "#F39A46",
+                    "#FFD166",
+                    "#8C6239",
+                    "#6F4E37",
+                    "#C68642",
+                    "#E76F51"
+                ]
+            )
+
+            fig.update_traces(
+                textposition="inside",
+                textinfo="percent+label",
+                marker=dict(
+                    line=dict(color="#151515", width=2)
+                )
+            )
+
+            fig.update_layout(
+                showlegend=False,
+                paper_bgcolor="#151515",
+                plot_bgcolor="#151515",
+                font=dict(color="white")
             )
 
         elif chart_type == "Box Plot":
-            fig = px.box(df, x=x_axis, y=y_axis, color=color)
+            fig = px.box(df, x=x_axis, y=y_axis, color=color,color_discrete_sequence=MOCHA_COLORS)
 
         elif chart_type == "Histogram":
-            fig = px.histogram(df, x=x_axis)
+            fig = px.histogram(df, x=x_axis,color_discrete_sequence=MOCHA_COLORS)
 
-        st.plotly_chart(fig, use_container_width=True)
+        fig = style_chart(fig)
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True,
+            config={
+                "displayModeBar": False
+            }
+        )
+        fig.update_layout(
+            height=480
+        )

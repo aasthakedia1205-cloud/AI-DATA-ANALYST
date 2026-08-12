@@ -138,7 +138,7 @@ def train_regression_model(df, target):
             ascending=False
         )
     }
-    fig, ax = plt.subplots(figsize=(4, 3))
+    fig, ax = plt.subplots(figsize=(5 , 3))
 
     ax.scatter(y_test, predictions)
 

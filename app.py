@@ -1,5 +1,4 @@
 # IMPORTS
-
 import streamlit as st
 import pandas as pd
 
@@ -20,6 +19,19 @@ from utils.ml_model import (
     get_valid_target_columns
 )
 from utils.model_compare import compare_models
+from utils.theme import apply_theme
+
+st.markdown("""
+<div class="page-container">
+""", unsafe_allow_html=True)
+
+# PAGE CONFIG
+
+st.set_page_config(
+    page_title="AI Data Analyst",
+    page_icon="📊",
+    layout="wide"
+)
 
 def load_css():
 
@@ -31,6 +43,43 @@ def load_css():
         )
 
 load_css()
+
+def upload_banner():
+
+    html = """
+<div style="
+background:linear-gradient(180deg,#1A1A1A,#141414);
+border:1px solid rgba(212,126,48,.18);
+border-radius:30px;
+padding:16px;
+text-align:center;
+margin-bottom:18px;
+box-shadow:0 20px 60px rgba(0,0,0,.35);
+">
+
+<h1 style="
+color:white;
+font-size:25px;
+margin-bottom:8px;
+font-weight:700;
+">
+Upload Your Dataset
+</h1>
+
+<p style="
+color:#B8B8B8;
+font-size:15px;
+line-height:1.8;
+margin-bottom:0px;
+">
+Upload CSV or Excel datasets and let AI clean, analyze,
+visualize and generate intelligent business insights.
+</p>
+
+</div>
+"""
+
+    st.markdown(html, unsafe_allow_html=True)
 
 def metric_card(icon, title, value):
 
@@ -45,13 +94,52 @@ def metric_card(icon, title, value):
         unsafe_allow_html=True
     )
 
-# PAGE CONFIG
+def ai_header():
 
-st.set_page_config(
-    page_title="AI Data Analyst",
-    page_icon="📊",
-    layout="wide"
-)
+    html = """
+<div style="
+background:linear-gradient(135deg,#1B1B1B,#151515);
+border:1px solid rgba(212,126,48,.18);
+border-radius:25px;
+padding:26px;
+margin-bottom:22px;
+">
+<div style="display:flex;align-items:center;gap:18px;">
+<div style="
+width:70px;
+height:70px;
+border-radius:18px;
+background:#D47E30;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+">
+🤖
+</div>
+<div>
+<h2 style="
+color:white;
+margin:0;
+font-size:30px;
+">
+AI Data Assistant
+</h2>
+<p style="
+color:#BDBDBD;
+margin-top:8px;
+font-size:17px;
+">
+Ask questions about your dataset in natural language.
+</p>
+</div>
+</div>
+</div>
+"""
+
+    st.markdown(html, unsafe_allow_html=True)
+
+apply_theme()
 
 # SESSION STATE
 
@@ -82,28 +170,59 @@ if "comparison_results" not in st.session_state:
 if "model_review" not in st.session_state:
     st.session_state.model_review = ""
 
+if "latest_answer" not in st.session_state:
+    st.session_state.latest_answer = ""
+
 # SIDEBAR
 
-st.sidebar.title("🤖 AI Data Analyst")
+st.sidebar.markdown("""
+# 🤖 AI Data Analyst
 
-st.sidebar.success("Project Modules")
+### 📂 Modules
 
-st.sidebar.write("📊 Dashboard")
-st.sidebar.write("🩺 Dataset Health")
-st.sidebar.write("🧹 Data Cleaning")
-st.sidebar.write("🤖 AI Insights")
-st.sidebar.write("💬 Chat")
+---
+
+📊 Dashboard
+
+🩺 Dataset Health
+
+🧹 Data Cleaning
+
+🤖 AI Insights
+
+📈 Prediction
+
+📄 AI Report
+
+💬 Chat
+
+---
+""")
 
 
 # MAIN PAGE
 
-st.title("📊 AI Data Analyst")
-st.write("Upload your CSV or Excel dataset and let AI analyze it.")
+st.markdown("""
+<div class="hero">
+    <div class="hero-content">
+        <h1>AI Data Analyst</h1>
+        <p>Analyze • Clean • Visualize • Predict</p>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-uploaded_file = st.file_uploader(
-    "Upload CSV or Excel",
-    type=["csv", "xlsx"]
-)
+left, center, right = st.columns([1,12,1])
+
+with center:
+    upload_banner()
+    st.caption(
+        "Drag & drop your dataset here or browse your files to begin analysis."
+    )
+    uploaded_file = st.file_uploader(
+        "",
+        type=["csv","xlsx"],
+        label_visibility="collapsed"
+    )
 
 if uploaded_file is not None:
 
@@ -146,9 +265,15 @@ if uploaded_file is not None:
 
     with tab1:
 
-        st.header("📋 Dataset Overview")
+        left, center, right = st.columns([0.5,9,0.5])
 
-        c1, c2, c3, c4 = st.columns(4)
+        with center:
+
+            ai_header()
+
+            c1, c2, c3, c4 = st.columns(4, gap="large")
+
+        st.markdown("<br>", unsafe_allow_html=True)
 
         with c1:
             metric_card("📄","Rows",df.shape[0])
@@ -161,6 +286,7 @@ if uploaded_file is not None:
 
         with c4:
             metric_card("🔄","Duplicates",df.duplicated().sum())
+
 
         with st.expander("📑 Dataset Preview"):
             st.dataframe(df)
@@ -193,7 +319,7 @@ if uploaded_file is not None:
 
     with tab2:
 
-        st.header("🤖 AI Dashboard Assistant")
+        ai_header()
 
         st.write(
             "AI is automatically understanding your dataset..."
@@ -201,7 +327,7 @@ if uploaded_file is not None:
 
         if st.session_state.dashboard_ai == "":
 
-            with st.spinner("🤖 AI is analyzing your dataset..."):
+            with st.spinner("AI is analyzing your dataset..."):
 
                 st.session_state.dashboard_ai = (
                     generate_dashboard_recommendations(df)
@@ -215,7 +341,7 @@ if uploaded_file is not None:
 
     with tab3:
 
-        st.header("🩺 Dataset Health Score")
+        ai_header()
 
         score, report = calculate_health_score(df)
 
@@ -241,7 +367,7 @@ if uploaded_file is not None:
 
     with tab4:
 
-        st.header("🧹 Data Cleaning Assistant")
+        ai_header()
 
         if st.button("Apply Data Cleaning"):
 
@@ -275,7 +401,7 @@ if uploaded_file is not None:
 
     with tab5:
 
-        st.header("🤖 AI Business Insights")
+        ai_header()
 
         if st.button("Generate AI Insights"):
 
@@ -291,38 +417,102 @@ if uploaded_file is not None:
 
     with tab6:
 
-        st.header("💬 Chat with Your Data")
+        st.markdown("""
+        <div class="assistant-header">
+            <h2>AI Assistant</h2>
+            <p>Ask questions and get intelligent insights from your dataset.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-        question = st.text_input("Ask anything about your dataset")
+        question = st.text_area(
+        "Ask AI",
+        placeholder="Example: Which region generated the highest sales?",
+        height=120
+    )
 
-        if st.button("Ask AI"):
+        if st.button("Generate Analysis"):
 
             if question.strip():
 
-                with st.spinner("Thinking..."):
+                with st.spinner("AI is analyzing your dataset..."):
 
-                    answer = ask_ai(df, question)
+                    st.session_state.latest_answer = ask_ai(df, question)
 
                 st.session_state.chat_history.append(
                     {
                         "question": question,
-                        "answer": answer
+                        "answer": st.session_state.latest_answer
                     }
                 )
 
             else:
                 st.warning("Please enter a question.")
 
+        st.markdown(f"""
+            <div style="
+            background:#171717;
+            border-left:5px solid #D47E30;
+            padding:25px;
+            border-radius:18px;
+            margin-top:20px;
+            ">
+            <h3 style="color:white;">
+            🤖 AI Analysis
+            </h3>
+            <p style="
+            color:#DDDDDD;
+            line-height:1.8;
+            ">
+            {st.session_state.latest_answer}
+            </p>
+            </div>
+            """, unsafe_allow_html=True)
+
         if st.session_state.chat_history:
 
-            st.subheader("Conversation")
+            st.markdown("### 💬 Conversation")
 
             for chat in st.session_state.chat_history:
 
-                st.markdown(f"**🧑 You:** {chat['question']}")
-                st.markdown(f"**🤖 AI:** {chat['answer']}")
+                st.markdown(f"""
+        <div style="
+        background:#2A211C;
+        padding:16px 20px;
+        border-radius:18px;
+        margin-top:12px;
+        margin-left:120px;
+        color:white;
+        border:1px solid rgba(212,126,48,.15);
+        ">
 
-                st.divider()
+        <b>👤 You</b><br><br>
+
+        {chat['question']}
+
+        </div>
+        """, unsafe_allow_html=True)
+
+                st.markdown(f"""
+        <div style="
+        background:#171717;
+        padding:20px;
+        border-radius:18px;
+        margin-top:10px;
+        margin-right:120px;
+        border-left:5px solid #D47E30;
+        color:#EAEAEA;
+        ">
+        <b>🤖 AI Assistant</b><br><br>
+        {chat['answer']}
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.button("🗑 Clear Conversation"):
+
+            st.session_state.chat_history = []
+            st.session_state.latest_answer = ""
+
+            st.rerun()
     
     # =====================================================
     # AI REPORT GENERATOR
@@ -330,7 +520,7 @@ if uploaded_file is not None:
 
     with tab7:
 
-        st.header("📄 AI Report Generator")
+        ai_header()
 
         st.write(
             "Generate a professional PDF report of your dataset."
@@ -364,7 +554,7 @@ if uploaded_file is not None:
 
     with tab8:
 
-        st.header("📈 Machine Learning")
+        ai_header()
 
         st.write("Train a Random Forest Regression model on your dataset.")
 
@@ -440,7 +630,7 @@ if uploaded_file is not None:
 
         st.divider()
 
-        st.subheader("🏆 Model Comparison")
+        st.subheader("Model Comparison")
 
         if problem == "Regression":
 
@@ -472,7 +662,7 @@ if uploaded_file is not None:
 
         st.divider()
 
-        st.subheader("🤖 AI Model Reviewer")
+        st.subheader("AI Model Reviewer")
 
         if st.button("Explain Model Performance"):
 
@@ -485,3 +675,5 @@ if uploaded_file is not None:
         if st.session_state.model_review:
 
             st.markdown(st.session_state.model_review)
+
+st.markdown("</div>", unsafe_allow_html=True)

@@ -2,7 +2,7 @@ AI Data Analyst
 
 An end-to-end AI-powered data analysis platform built with Python and Streamlit that allows users to upload datasets, automatically analyze and clean data, generate visualizations, obtain AI-powered business insights, train machine learning models, and generate reports — all through an interactive dashboard.
 
-🔗 Live Demo:
+🔗 Live Demo: https://ai-data-analyst-ntpqim6vmr3rruk3ej2ni5.streamlit.app/
 
 Dashboard Preview
 <img width="959" height="440" alt="dashboard_ai" src="https://github.com/user-attachments/assets/6441a9fb-f62b-432b-90f0-085f1e9f7d51" />

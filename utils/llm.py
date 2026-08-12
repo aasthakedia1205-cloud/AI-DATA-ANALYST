@@ -1,15 +1,15 @@
 from google import genai
-from dotenv import load_dotenv
-import os
 import time
+import os
+import streamlit as st
+from google import genai
 
-# Load environment variables
-load_dotenv()
+api_key = st.secrets.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY")
 
-# Create Gemini client
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+if not api_key:
+    raise ValueError("GEMINI_API_KEY is not configured.")
+
+client = genai.Client(api_key=api_key)
 
 # Models to try (in order)
 MODELS = [

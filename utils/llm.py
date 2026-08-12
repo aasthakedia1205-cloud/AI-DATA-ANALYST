@@ -1,17 +1,38 @@
-from google import genai
-import time
 import os
+import time
 import streamlit as st
+from dotenv import load_dotenv
 from google import genai
 
-api_key = st.secrets.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY")
+# Load local .env file
+load_dotenv()
+
+# Get API key
+api_key = os.getenv("GEMINI_API_KEY")
+
+# If running on Streamlit Cloud, use Streamlit Secrets
+if not api_key:
+    try:
+        api_key = st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        api_key = None
 
 if not api_key:
     raise ValueError("GEMINI_API_KEY is not configured.")
 
 client = genai.Client(api_key=api_key)
 
-# Models to try (in order)
+for model in client.models.list():
+
+    if "generateContent" in model.supported_actions:
+
+        print(model.name)
+
+
+# =========================================================
+# AVAILABLE MODELS
+# =========================================================
+
 MODELS = [
     "gemini-3.5-flash",
     "gemini-3.1-flash-lite",
@@ -19,63 +40,97 @@ MODELS = [
 ]
 
 
+# =========================================================
+# GENERATE RESPONSE
+# =========================================================
+
 def generate_response(prompt):
-    """
-    Tries multiple Gemini models with retries.
-    """
 
     last_error = None
 
     for model in MODELS:
 
-        for attempt in range(3):   # Retry 3 times
+        for attempt in range(3):
 
             try:
+
                 response = client.models.generate_content(
                     model=model,
                     contents=prompt
                 )
 
-                return response.text
+                if response and response.text:
+                    return response.text
 
             except Exception as e:
 
                 last_error = e
-
                 error = str(e)
 
-                # Retry only if model is busy
-                if "503" in error or "UNAVAILABLE" in error:
-                    time.sleep(2)
-                    continue
+                # -----------------------------
+                # Server temporarily unavailable
+                # -----------------------------
 
-                # If model doesn't exist for this account,
-                # try the next model
-                if "404" in error or "NOT_FOUND" in error:
+                if "503" in error or "UNAVAILABLE" in error:
+
+                    if attempt < 2:
+                        time.sleep(2)
+                        continue
+
                     break
 
-                # Quota exceeded
+                # -----------------------------
+                # Model not available
+                # -----------------------------
+
+                if "404" in error or "NOT_FOUND" in error:
+
+                    break
+
+                # -----------------------------
+                # API quota
+                # -----------------------------
+
                 if "429" in error:
+
                     return (
-                        "❌ API quota exceeded.\n\n"
-                        "Please wait for your quota to reset "
+                        "❌ Gemini API quota exceeded.\n\n"
+                        "Please wait for the quota to reset "
                         "or use another Gemini API key."
                     )
 
-                # Any other unexpected error
-                return f"❌ {error}"
+                # -----------------------------
+                # Authentication
+                # -----------------------------
+
+                if (
+                    "401" in error
+                    or "UNAUTHENTICATED" in error
+                    or "authentication" in error.lower()
+                ):
+
+                    return (
+                        "❌ Gemini authentication failed.\n\n"
+                        "Please check the GEMINI_API_KEY "
+                        "configured in Streamlit Secrets."
+                    )
+
+                # -----------------------------
+                # Other error
+                # -----------------------------
+
+                return f"❌ Gemini Error:\n{error}"
 
     return (
-        "❌ All Gemini models are currently unavailable.\n\n"
-        "This usually happens when Google's servers are under heavy load.\n"
-        "Please try again after a few minutes.\n\n"
+        "❌ Gemini is currently unavailable.\n\n"
+        "Please try again in a few moments.\n\n"
         f"Last Error:\n{last_error}"
     )
 
 
-# -------------------------------------------------
-# Business Insights
-# -------------------------------------------------
+# =========================================================
+# BUSINESS INSIGHTS
+# =========================================================
 
 def generate_business_insights(df):
 
@@ -97,9 +152,9 @@ Dataset Sample:
     return generate_response(prompt)
 
 
-# -------------------------------------------------
-# Chat with Data
-# -------------------------------------------------
+# =========================================================
+# CHAT WITH DATA
+# =========================================================
 
 def ask_ai(df, question):
 
@@ -115,44 +170,36 @@ User Question:
 {question}
 
 Instructions:
+
 - Answer only using the information available in the dataset.
-- If the dataset doesn't contain enough information, clearly mention that.
+- If the dataset does not contain enough information, clearly mention that.
+- Do not invent information.
 - Keep the answer concise and well formatted.
 """
 
     return generate_response(prompt)
 
 
+# =========================================================
+# EXPLAIN MODEL RESULTS
+# =========================================================
 
 def explain_model_results(comparison_df):
 
     prompt = f"""
-    You are a Senior Machine Learning Consultant.
+You are a Senior Machine Learning Consultant.
 
-    The following machine learning models were trained.
+The following machine learning models were trained:
 
-    {comparison_df.to_string(index=False)}
+{comparison_df.to_string(index=False)}
 
-    Explain:
+Explain:
 
-    1. Which model is best?
-    2. Why is it best?
-    3. Why did other models perform worse?
-    4. Which model would you deploy?
-    5. Keep the explanation beginner-friendly.
-    """
+1. Which model is best?
+2. Why is it best?
+3. Why did other models perform worse?
+4. Which model would you deploy?
+5. Keep the explanation beginner-friendly.
+"""
 
-    for model in MODELS:
-
-        try:
-            response = client.models.generate_content(
-                model=model,
-                contents=prompt
-            )
-
-            return response.text
-
-        except Exception:
-            continue
-
-    return "❌ All Gemini models are currently unavailable."
+    return generate_response(prompt)
